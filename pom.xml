@@ -11,7 +11,7 @@
     <groupId>ibatov.telegramBot</groupId>
     <artifactId>AlphaBilling</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>telegram</name>
     <description>Demo project for Spring Boot</description>
     <url/>
@@ -66,9 +66,15 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.0</version>
+                <configuration>
+                    <source>19</source>
+                    <target>19</target>
+                </configuration>
             </plugin>
+
         </plugins>
     </build>
 

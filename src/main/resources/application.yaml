@@ -1,3 +1,7 @@
 bot:
   token: ${tokenTelegram}
   name: ${botName}
+  secretKey: ${secretKey}
+
+server:
+  port: 8090
