@@ -62,15 +62,21 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private void authenticateNumber(String phoneNumber, Message updateChat) {
-        String apiUrl = "http://localhost:8080/auth/checkPhone";
+        String apiUrlCheck = "http://host.docker.internal:8080/auth/checkPhone";
+        String apiUrlSend = "http://host.docker.internal:8080/auth/sendCodeTelegram";
+        if(!phoneNumber.contains("+")){
+            phoneNumber = "+" + phoneNumber;
+        }
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Object> requestEntity = new HttpEntity<>(new PhoneDto(phoneNumber), headers);
-        ResponseEntity<Boolean> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.POST, requestEntity, Boolean.class);
+        System.out.printf(phoneNumber);
+        ResponseEntity<Boolean> responseEntity = restTemplate.exchange(apiUrlCheck, HttpMethod.POST, requestEntity, Boolean.class);
         if (Boolean.TRUE.equals(responseEntity.getBody())){
-            String text = "Ваша ссылка для входа: " + "http://localhost:5173/auth/" + encrypt(phoneNumber);
-            sendMessage(updateChat.getChatId(),text);
+            requestEntity = new HttpEntity<>(phoneNumber);
+            ResponseEntity<String> responseEntityCode = restTemplate.exchange(apiUrlSend,HttpMethod.POST, requestEntity, String.class);
+            sendMessage(updateChat.getChatId(), "Ваш код для входа: " + responseEntityCode.getBody());
         }
         else {
             sendMessage(updateChat.getChatId(), "Такого номера в базе нету!!!!");
@@ -105,12 +111,6 @@ public class Bot extends TelegramLongPollingBot {
 
         keyboardMarkup.setKeyboard(keyboardRows);
         return keyboardMarkup;
-    }
-
-    public String encrypt(String phoneNumber) {
-        System.out.println(key);
-        String combined = phoneNumber + key;
-        return Base64.getEncoder().encodeToString(combined.getBytes());
     }
 
     @Override
